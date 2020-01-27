@@ -14,7 +14,7 @@ fn main() {
     let src_dir = format!("{}/libcoap", proj_dir);
     let out_lib_dir = format!("{}/libcoap", out_dir);
     //let out_lib_dir = &out_dir;
-    std::fs::remove_dir_all(&out_lib_dir);
+    let _e = std::fs::remove_dir_all(&out_lib_dir);
 
     // println!("out libdir: {}", out_lib_dir);
     // println!("src dir: {}", src_dir);
@@ -31,7 +31,7 @@ fn main() {
     //     .output()
     //     .expect("failed to run autogen.sh");
     //
-    let autogen = Command::new("sh")
+    let _autogen = Command::new("sh")
         .current_dir(&out_lib_dir)
         .arg("-c")
         .arg(format!(
