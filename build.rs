@@ -9,17 +9,47 @@ use std::process::Command;
 use bindgen;
 
 fn main() {
-    let autogen = Command::new("sh")
-        .current_dir("libcoap")
-        .arg("-c")
-        .arg("./autogen.sh")
-        .output()
-        .expect("failed to run autogen.sh");
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let proj_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let src_dir = format!("{}/libcoap", proj_dir);
+    let out_lib_dir = format!("{}/libcoap", out_dir);
+    //let out_lib_dir = &out_dir;
+    std::fs::remove_dir_all(&out_lib_dir);
 
-    assert!(autogen.status.success(), "autogen.sh failed");
+    // println!("out libdir: {}", out_lib_dir);
+    // println!("src dir: {}", src_dir);
+    let options = fs_extra::dir::CopyOptions::new(); //Initialize default values for CopyOptions
+                                                     // options.mirror_copy = true; // To mirror copy the whole structure of the source directory
+    fs_extra::dir::copy(&src_dir, &out_dir, &options).unwrap();
+
+    // just copy the damn library to build path...
+
+    // let autogen = Command::new("sh")
+    //     .current_dir(out_dir)
+    //     .arg("-c")
+    //     .arg("./autogen.sh")
+    //     .output()
+    //     .expect("failed to run autogen.sh");
+    //
+    let autogen = Command::new("sh")
+        .current_dir(&out_lib_dir)
+        .arg("-c")
+        .arg(format!(
+            "autoreconf --force --install --verbose {}",
+            &out_lib_dir
+        ))
+        // .arg("--force")
+        // .arg("--install")
+        // .arg("")
+        // .arg(&lib_dir)
+        .output()
+        .expect("failed to run autoreconf, do you have the autotools installed?");
+
+    // assert!(autogen.status.success(), "autogen.sh failed");
 
     // Build the project in the path `foo` and installs it in `$OUT_DIR`
-    let dst = Config::new("libcoap")
+    let dst = Config::new(&out_lib_dir)
+        //.reconf("--force --install")
         .enable("manpages", Some("no"))
         .enable("doxygen", Some("no"))
         .enable("examples", Some("no"))
@@ -49,7 +79,7 @@ fn main() {
         .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_path = PathBuf::from(&out_dir);
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
