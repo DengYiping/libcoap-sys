@@ -1,0 +1,16 @@
+[package]
+name = "libcoap-sys"
+version = "0.1.0"
+authors = ["Kristoffer Ödmark <kristoffer.odmark90@gmail.com>"]
+edition = "2018"
+
+links = "crypto ssl"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+autotools = "0.2.1"
+bindgen = "0.52.0"
+
