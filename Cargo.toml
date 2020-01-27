@@ -8,7 +8,7 @@ links = "crypto ssl"
 
 description = "FFI bindings that builds the libcoap library towards openssl with dtls support"
 
-license = "MIT and the licenses detailed in libcoap which this library builds and links"
+license = "MIT"
 
 #include = ["libcoap/*"]
 
